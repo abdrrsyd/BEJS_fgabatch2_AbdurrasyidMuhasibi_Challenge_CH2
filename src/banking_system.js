@@ -1,6 +1,6 @@
 import BankAccount from "./bank_account.js";
 
-async function getChoice() {
+async function getUserChoice() {
   return new Promise((resolve) => {
     const choice = window.prompt(
       "Select action:\n1. Deposit\n2. Withdraw\n3. Check Balance\n4. Transaction History\n5. Exit"
@@ -9,7 +9,7 @@ async function getChoice() {
   });
 }
 
-async function executeChoice(account, choice) {
+async function handleUserChoice(account, choice) {
   switch (choice) {
     case "1":
       const depositAmount = parseFloat(
@@ -37,9 +37,9 @@ async function menu() {
 
   let choice;
   do {
-    choice = await getChoice();
+    choice = await getUserChoice();
     try {
-      const result = await executeChoice(account, choice);
+      const result = await handleUserChoice(account, choice);
       window.alert(result);
     } catch (error) {
       window.alert(error.message);

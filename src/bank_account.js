@@ -8,33 +8,38 @@ class BankAccount {
     return !isNaN(amount) && amount > 0;
   }
 
-  async deposit(amount) {
-    if (!this.isValidAmount(amount)) {
-      throw new Error("The amount entered is invalid.");
-    }
-    return new Promise((resolve) => {
+  async processTransaction(action, amount, transactionMessage) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.balance += amount;
-        this.transactionHistory.push(`Deposited: ${amount}`);
-        resolve(`Your new balance is: ${this.balance}`);
+        if (this.isValidAmount(amount)) {
+          action(amount);
+          this.transactionHistory.push(transactionMessage(amount));
+          resolve(`Your new balance is: ${this.balance}`);
+        } else {
+          reject(new Error("The amount entered is invalid."));
+        }
       }, 1000);
     });
   }
 
+  async deposit(amount) {
+    return this.processTransaction(
+      (amt) => (this.balance += amt),
+      amount,
+      (amt) => `Deposited: ${amt}`
+    );
+  }
+
   async withdraw(amount) {
-    if (!this.isValidAmount(amount)) {
-      throw new Error("The amount entered is invalid.");
-    }
     if (amount > this.balance) {
-      throw new Error("Insufficient balance.");
+      return Promise.reject(new Error("Insufficient balance."));
     }
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.balance -= amount;
-        this.transactionHistory.push(`Withdrawn: ${amount}`);
-        resolve(`Your new balance is: ${this.balance}`);
-      }, 1000);
-    });
+
+    return this.processTransaction(
+      (amt) => (this.balance -= amt),
+      amount,
+      (amt) => `Withdrawn: ${amt}`
+    );
   }
 
   checkBalance() {
