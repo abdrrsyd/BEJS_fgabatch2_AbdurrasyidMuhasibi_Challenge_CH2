@@ -9,33 +9,32 @@ class BankAccount {
   }
 
   async deposit(amount) {
-    if (this.isValidAmount(amount)) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.balance += amount;
-          this.transactionHistory.push(`Deposited: ${amount}`);
-          resolve(`Your new balance is: ${this.balance}`);
-        }, 1000);
-      });
-    } else {
+    if (!this.isValidAmount(amount)) {
       throw new Error("The amount entered is invalid.");
     }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.balance += amount;
+        this.transactionHistory.push(`Deposited: ${amount}`);
+        resolve(`Your new balance is: ${this.balance}`);
+      }, 1000);
+    });
   }
 
   async withdraw(amount) {
-    if (this.isValidAmount(amount) && amount <= this.balance) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.balance -= amount;
-          this.transactionHistory.push(`Withdrawn: ${amount}`);
-          resolve(`Your new balance is: ${this.balance}`);
-        }, 1000);
-      });
-    } else if (amount > this.balance) {
-      throw new Error("Insufficient balance.");
-    } else {
+    if (!this.isValidAmount(amount)) {
       throw new Error("The amount entered is invalid.");
     }
+    if (amount > this.balance) {
+      throw new Error("Insufficient balance.");
+    }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.balance -= amount;
+        this.transactionHistory.push(`Withdrawn: ${amount}`);
+        resolve(`Your new balance is: ${this.balance}`);
+      }, 1000);
+    });
   }
 
   checkBalance() {
