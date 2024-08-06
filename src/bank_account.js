@@ -1,80 +1,60 @@
-let balance = 0;
-const transactionHistory = [];
+class BankAccount {
+  constructor() {
+    this.balance = 0;
+    this.transactionHistory = [];
+  }
 
-function isValidAmount(amount) {
-  return !isNaN(amount) && amount > 0;
-}
+  isValidAmount(amount) {
+    return !isNaN(amount) && amount > 0;
+  }
 
-function deposit() {
-  const amount = parseFloat(window.prompt("Enter the amount to deposit:"));
+  async deposit(amount) {
+    if (this.isValidAmount(amount)) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.balance += amount;
+          this.transactionHistory.push(`Deposited: ${amount}`);
+          resolve(`Your new balance is: ${this.balance}`);
+        }, 1000);
+      });
+    } else {
+      throw new Error("The amount entered is invalid.");
+    }
+  }
 
-  if (isValidAmount(amount)) {
-    balance += amount;
-    transactionHistory.push(`Deposited: ${amount}`);
-    window.alert(`Your new balance is: ${balance}`);
-  } else {
-    window.alert("The amount entered is invalid.");
+  async withdraw(amount) {
+    if (this.isValidAmount(amount) && amount <= this.balance) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.balance -= amount;
+          this.transactionHistory.push(`Withdrawn: ${amount}`);
+          resolve(`Your new balance is: ${this.balance}`);
+        }, 1000);
+      });
+    } else if (amount > this.balance) {
+      throw new Error("Insufficient balance.");
+    } else {
+      throw new Error("The amount entered is invalid.");
+    }
+  }
+
+  checkBalance() {
+    return `Your balance is: ${this.balance}`;
+  }
+
+  async historyTransaction() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (this.transactionHistory.length === 0) {
+          resolve("No transactions have been made.");
+        } else {
+          resolve(
+            "Transaction History:\n" + this.transactionHistory.join("\n")
+          );
+        }
+      }, 2000);
+    });
   }
 }
 
-function withdraw() {
-  const amount = parseFloat(window.prompt("Enter the amount to withdraw:"));
-
-  if (isValidAmount(amount) && amount <= balance) {
-    balance -= amount;
-    transactionHistory.push(`Withdraw: ${amount}`);
-    window.alert(`Your new balance is: ${balance}`);
-  } else if (amount > balance) {
-    window.alert("Insufficient balance.");
-  } else {
-    window.alert("The amount entered is invalid.");
-  }
-}
-
-function checkBalance() {
-  window.alert(`Your balance is: ${balance}`);
-}
-
-function historyTransaction() {
-  if (transactionHistory.length === 0) {
-    window.alert("No transactions have been made.");
-  } else {
-    window.alert("Transaction History:\n" + transactionHistory.join("\n"));
-  }
-}
-
-function handleUserChoice(choice) {
-  switch (choice) {
-    case "1":
-      deposit();
-      break;
-    case "2":
-      withdraw();
-      break;
-    case "3":
-      checkBalance();
-      break;
-    case "4":
-      historyTransaction();
-      break;
-    case "5":
-      window.alert("Thank you for using the banking app!");
-      break;
-    default:
-      window.alert("Invalid selection. Please try again.");
-  }
-}
-
-function menu() {
-  let choice;
-
-  do {
-    choice = window.prompt(
-      "Select action:\n1. Deposit\n2. Withdraw\n3. Check Balance\n4. Transaction History\n5. Exit"
-    );
-
-    handleUserChoice(choice);
-  } while (choice !== "5");
-}
-
-document.getElementById("startApp").addEventListener("click", menu);
+export default BankAccount;
