@@ -9,14 +9,18 @@ class BankAccount {
   }
 
   async processTransaction(action, amount, transactionMessage) {
+    if (!this.isValidAmount(amount)) {
+      throw new Error("The amount entered is invalid.");
+    }
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (this.isValidAmount(amount)) {
+        try {
           action(amount);
           this.transactionHistory.push(transactionMessage(amount));
           resolve(`Your new balance is: ${this.balance}`);
-        } else {
-          reject(new Error("The amount entered is invalid."));
+        } catch (error) {
+          reject(error);
         }
       }, 1000);
     });
@@ -32,9 +36,8 @@ class BankAccount {
 
   async withdraw(amount) {
     if (amount > this.balance) {
-      return Promise.reject(new Error("Insufficient balance."));
+      throw new Error("Insufficient balance.");
     }
-
     return this.processTransaction(
       (amt) => (this.balance -= amt),
       amount,
